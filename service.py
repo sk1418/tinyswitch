@@ -7,15 +7,15 @@ def getConnection():
     return conn
 
 
-def __lookupTP():
+def findtinyproxy():
     """
     search the tinyproxy starting script. if found one (either in /etc/init.d/ or /etc/rc.d/) 
     return the path, otherwise return None. This should be done when application starts the 
     first time.(or the config in DB is empty)
     """
-    if os.path.isfile(TP_LOOKUP1) :
+    if os.path.isfile(config.TP_LOOKUP1) :
         return config.TP_LOOKUP1
-    elif os.path.isfile(TP_LOOKUP2):
+    elif os.path.isfile(config.TP_LOOKUP2):
         return config.TP_LOOKUP2
     else:
         return None
@@ -68,7 +68,7 @@ def startup():
     conn.commit()
     conn.close()
 
-def __restartTP():
+def restartTP():
     """
     restart tinyproxy. 
     """

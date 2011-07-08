@@ -1,6 +1,7 @@
-import service
-import config
 from entity import *
+import service,os
+from service import findtinyproxy
+import config
 import getpass
 
 
@@ -90,7 +91,7 @@ def add():
 
 def set():
     """set proxy as current proxy"""
-    
+    init() 
     conn = service.getConnection()
     dao  = ProxyDao(conn)
     print "---- Set proxy ----"
@@ -111,8 +112,45 @@ def set():
     print p
     print "---- Proxy set ----"
 
+def init():
+    """check tinyproxy start script path, if not there set the path interactively"""
+    conn = service.getConnection()
+    dao  = ProxyDao(conn)
+    if not dao.getTinyProxyPath().strip(): # no value in DB for tinyproxy.bin.path
+        print "\n---- tinyproxy mgmt script location has not been set. Enter initialization wizard ----\n"
+        reconfig() 
+        print "\n---- tinyswitch initialized ----\n"
+    conn.close()
+
+def reconfig():
+    """reset tinyproxy.bin.path"""
+    found = findtinyproxy()
+    conn  = service.getConnection() 
+    dao   = ProxyDao(conn)
+    path  = ""
+    print "\n---- set tinyproxy start script ----\n"
+    if found:
+        yn = raw_input("> TinySwtich found tinyproxy script (%s) Is that correct? [yes|no]: "%(found,))
+        if yn.lower() == "yes":
+            path = found
+    while 1:
+        
+        path = raw_input( """> Please enter the tinyproxy mgmt script location:
+Note:/usr/sbin/tinyproxy is NOT the script! \n """) if not path else path
+        if path and os.path.isfile(path):
+            break
+        else:
+            print "Error: script path is not valid"
+            path=""
+    #till here, path should be set successfully
+    dao.saveTinyProxyPath(path)    
+    conn.commit()
+    print "\n---- tinyproxy mgmt script location [%s] was set ----\n" % (path,)
+    conn.close()
+
+
 
 
 if  __name__ == '__main__':
-    #set()
-    all()
+    set()
+    
