@@ -1,7 +1,8 @@
 syntax: glob
 data/proxies
-tinyproxy.conf
+tinyproxy.config
 t.py
+.hgignore
 *.pyc
 *.swp
 *.orig
