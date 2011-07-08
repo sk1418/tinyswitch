@@ -1,0 +1,7 @@
+syntax: glob
+data/proxies
+tinyproxy.conf
+t.py
+*.pyc
+*.swp
+*.orig
