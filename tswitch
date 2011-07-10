@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+import cliservice as cli    
+import sys
+
+helpInof = """
+    tswitch is the cli of tinyswitch. 
+    Usage tswitch [Option]
+    
+    OPTION 
+
+        -r reconfig tinyswitch
+        -d delete a proxy entry from tinyswitch
+        -a add a new proxy entry 
+        -l list all proxy entries managed by tinyswitch
+        -s set/(switch to) another proxy as system proxy server (root permission needed)
+        -h print help message
+            """
+
+
+def usage():
+    """print usage information"""
+    print helpInof
+
+
+operations = {
+    '-a' : cli.add,
+    '-r' : cli.reconfig,
+    '-d' : cli.remove,
+    '-l' : cli.all,
+    '-s' : cli.set,
+    '-h' : usage
+    }
+
+if __name__ == '__main__':
+    if sys.argv.__len__() <2 or not sys.argv[1]:
+        usage()
+        sys.exit(1)
+    else:
+        f = operations.get(sys.argv[1])
+        f() if f else usage()
+        exit(0)
+
+

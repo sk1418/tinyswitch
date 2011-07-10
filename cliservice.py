@@ -4,7 +4,20 @@ from service import findtinyproxy
 import config
 import getpass
 
+def __names(dao):
+    """get proxy names, only used internally"""
+    proxies = dao.all()
+    print "\n"
+    print "name of proxies (proxy in use with '*'):"
+    print "----------------"
+    for p in proxies:
+        pstr = "  %s"%(p.name)
+        pstr = pstr.replace(' ','*' if p.active else ' ',1)
 
+        print pstr
+    print "----------------\n"
+
+    
 
 def all():
     """
@@ -13,8 +26,9 @@ def all():
     conn    = service.getConnection()
     dao     = ProxyDao(conn)
     proxies = dao.all()
-    uproxy  = service.findUsingProxyInDB(conn)
+    #uproxy  = service.findUsingProxyInDB(conn)
     print "\n"
+    print "All proxies in tinyswitch (proxy in use with '*'):"
     print "-"*70
     print "%-2s%-10s\t%-40s\t%-5s\t" % (" ","Name","Server","Port")
     print "-"*70
@@ -30,6 +44,7 @@ def remove():
     """remove a proxy by name"""
     conn = service.getConnection()
     dao  = ProxyDao(conn)
+    __names(dao) # print available proxy names
     print "---- Removing Proxy ----"
     p = None # the proxy to be deleted
     while 1:
@@ -58,6 +73,7 @@ def add():
     """add a new proxy entry with cli"""
     conn  = service.getConnection()
     dao   = ProxyDao(conn)
+    __names(dao) # print available proxy names
     print "---- Adding new Proxy ----"
     while 1:
         nname = raw_input("> The name of the new Proxy: ")
@@ -91,9 +107,11 @@ def add():
 
 def set():
     """set proxy as current proxy"""
-    init() 
+    
+    init() #check if init() is needed
     conn = service.getConnection()
     dao  = ProxyDao(conn)
+    __names(dao) # print available proxy names
     print "---- Set proxy ----"
     p = None # the proxy to be set
     while 1:
@@ -147,8 +165,6 @@ Note:/usr/sbin/tinyproxy is NOT the script! \n """) if not path else path
     conn.commit()
     print "\n---- tinyproxy mgmt script location [%s] was set ----\n" % (path,)
     conn.close()
-
-
 
 
 if  __name__ == '__main__':

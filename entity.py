@@ -26,7 +26,7 @@ class Proxy:
 
 
     def __repr__(self):
-        return 'Id:%d, \n name:%s \n server:%s \n port:%s \n authString: %s\n desc:%s' %(self.id,self.name, self.server, self.port, self.authstring, self.description )
+        return ' Id:%d, \n name:%s \n server:%s \n port:%s \n authString: %s\n desc:%s' %(self.id,self.name, self.server, self.port, self.authstring, self.description )
 
 
 class ProxyDao:
