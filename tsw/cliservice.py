@@ -7,8 +7,7 @@ import getpass
 def __names(dao):
     """get proxy names, only used internally"""
     proxies = dao.all()
-    print "\n"
-    print "name of proxies (proxy in use with '*'):"
+    print "\nName of proxies (proxy in use with '*'):"
     print "----------------"
     for p in proxies:
         pstr = "  %s"%(p.name)
@@ -27,8 +26,7 @@ def all():
     dao     = ProxyDao(conn)
     proxies = dao.all()
     #uproxy  = service.findUsingProxyInDB(conn)
-    print "\n"
-    print "All proxies in tinyswitch (proxy in use with '*'):"
+    print "\nAll proxies in tinyswitch (proxy in use with '*'):"
     print "-"*70
     print "%-2s%-10s\t%-40s\t%-5s\t" % (" ","Name","Server","Port")
     print "-"*70
@@ -37,7 +35,6 @@ def all():
             print "%-2s%-10s\t%-40s\t%-5s\t" % ("*", p.name, p.server, p.port) 
         else :
             print "%-2s%-10s\t%-40s\t%-5s\t" % (" ", p.name, p.server, p.port) 
-    print "\n"
     conn.close()
 
 def remove():
@@ -166,7 +163,3 @@ Note:/usr/sbin/tinyproxy is NOT the script! \n """) if not path else path
     print "\n---- tinyproxy mgmt script location [%s] was set ----\n" % (path,)
     conn.close()
 
-
-if  __name__ == '__main__':
-    set()
-    

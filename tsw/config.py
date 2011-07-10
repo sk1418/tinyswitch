@@ -1,4 +1,5 @@
-CONN_PATH      = "../data/proxies"         #sqlite3 data file path
+from os import path
+CONN_PATH      = path.join(path.dirname(__file__),"../data/proxies")         #sqlite3 data file path
 VERSION        = '1.0.0'               #software version
 VERSION_URL    = 'http://to be defined'#version url, used to check if there is new version
 LATEST_VERSION = None
