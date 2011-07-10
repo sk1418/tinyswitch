@@ -1,9 +1,9 @@
-CONN_PATH      = "data/proxies"         #sqlite3 data file path
+CONN_PATH      = "../data/proxies"         #sqlite3 data file path
 VERSION        = '1.0.0'               #software version
 VERSION_URL    = 'http://to be defined'#version url, used to check if there is new version
 LATEST_VERSION = None
 TP_BIN         = ''                    #tinyproxy starting script path, will be assigned by the app.
-TP_CONF        = 'tinyproxy.config'                    #tinyproxy configuration file path
+TP_CONF        = '../tinyproxy.config'                    #tinyproxy configuration file path
 
 TP_LOOKUP1     = '/etc/init.d/tinyproxy'                    #tinyproxy lookup location 1
 TP_LOOKUP2     = '/etc/rc.d/tinyproxy'                    #tinyproxy lookup location 2
