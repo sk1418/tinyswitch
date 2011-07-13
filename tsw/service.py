@@ -6,6 +6,10 @@ def getConnection():
     conn = sqlite.connect(config.CONN_PATH)
     return conn
 
+def checkPermission():
+    """check if the user has permission to update tinyproxy conf file and manage tinyproxy"""
+    return os.access(config.TP_BIN,os.X_OK) and os.access(config.TP_CONF,os.W_OK)
+
 
 def findtinyproxy():
     """
@@ -56,11 +60,11 @@ def startup():
     # set system parameters(TP_BIN) in config
     conn = getConnection()
     proxyDao = ProxyDao(conn)
-    bin = getTinyProxyPath(conn)
+    bin = proxyDao.getTinyProxyPath()
     config.TP_BIN = bin 
 
     # get the using proxy in conf file and set active in db
-    deactiveAll(conn)
+    proxyDao.deactiveAll()
     serverInUse = findUsingProxyInConf()
     proxy = findUsingProxyInDB(conn)
     if proxy:

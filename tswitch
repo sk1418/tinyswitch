@@ -2,6 +2,7 @@
 
 import tsw.cliservice as cli    
 import sys
+import tsw.service as service
 
 helpInof = """
     tswitch is the cli of tinyswitch. 
@@ -34,6 +35,7 @@ operations = {
     }
 
 if __name__ == '__main__':
+    service.startup()
     if sys.argv.__len__() <2 or not sys.argv[1]:
         usage()
         sys.exit(1)

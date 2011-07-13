@@ -115,7 +115,12 @@ def add():
     conn.close()
 
 def setByName(name):
+    
     """set proxy by given name"""
+    #check permission
+    if not service.checkPermission():
+        print "Error: set proxy failed. Permission denied!"
+        exit(1)
     init() #check if init() is needed
     conn  = service.getConnection() 
     dao   = ProxyDao(conn)
