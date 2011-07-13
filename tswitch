@@ -13,7 +13,7 @@ helpInof = """
         -d delete a proxy entry from tinyswitch
         -a add a new proxy entry 
         -l list all proxy entries managed by tinyswitch
-        -s set/(switch to) another proxy as system proxy server (root permission needed)
+        -s [name] set/(switch to) another proxy as system proxy server (root permission needed). if [name] is given, tinyproxy will set the [name] proxy as system proxy, otherwise proxy will be set interactively.
         -h print help message
             """
 
@@ -24,21 +24,28 @@ def usage():
 
 
 operations = {
-    '-a' : cli.add,
-    '-r' : cli.reconfig,
-    '-d' : cli.remove,
-    '-l' : cli.all,
-    '-s' : cli.set,
-    '-h' : usage
+    '-a'  : cli.add,
+    '-r'  : cli.reconfig,
+    '-d'  : cli.remove,
+    '-l'  : cli.all,
+    '-s'  : cli.set,
+    '-sn' : cli.setByName,
+    '-h'  : usage
     }
 
 if __name__ == '__main__':
     if sys.argv.__len__() <2 or not sys.argv[1]:
         usage()
         sys.exit(1)
-    else:
-        f = operations.get(sys.argv[1])
-        f() if f else usage()
-        exit(0)
+    else: 
+        if sys.argv[1] == '-s' and sys.argv.__len__() == 3 and  sys.argv[2]: # -s with name
+            f = operations.get('-sn')
+            f(sys.argv[2]) 
+            sys.exit(0)
+        else:
+            f = operations.get(sys.argv[1])
+            f() if f else usage()
+            sys.exit(0)
+
 
 

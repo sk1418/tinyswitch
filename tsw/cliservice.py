@@ -48,6 +48,8 @@ def remove():
         name = raw_input("> Proxy name to be remove: ")
         if not name :
             print "Error: name cannot be empty!"
+        elif name == 'noproxy':
+            print "Error: 'noproxy' is a reversed proxy, it cannot be deleted!"
         else:
             p = dao.getProxyByName(name)
             if not p:
@@ -78,8 +80,18 @@ def add():
             print "Error: name is empty or already exists!"
         else:
             break
-    nserver = raw_input("> The server address of the new Proxy: ")
-    nport   = raw_input("> The port number of the new Proxy: ")
+    while 1:
+        nserver = raw_input("> The server address of the new Proxy: ")
+        if not nserver:
+            print "Error: server address cannot be empty!"
+        else:
+            break
+    while 1:
+        nport   = raw_input("> The port number of the new Proxy: ")
+        if not nport:
+            print "Error: port number cannot be empty!"
+        else:
+            break
     nuser   = raw_input("> Username  (Press Enter if no authentication needed): ")
     npwd    = ''
     if nuser:
@@ -102,8 +114,22 @@ def add():
     print np
     conn.close()
 
+def setByName(name):
+    """set proxy by given name"""
+    init() #check if init() is needed
+    conn  = service.getConnection() 
+    dao   = ProxyDao(conn)
+    p = dao.getProxyByName(name)
+    conn.close()
+    if not p:
+        print "Error: The proxy name doesn't exist!"
+    else:
+        service.setproxy(p)
+        print "Proxy was set successfully."
+        print p
+
 def set():
-    """set proxy as current proxy"""
+    """set proxy as current proxy (interactively)"""
     
     init() #check if init() is needed
     conn = service.getConnection()

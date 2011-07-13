@@ -77,12 +77,12 @@ def restartTP():
     
 def setproxy(proxy):
     """set the proxy as upstream of tinyproxy"""
+    lines = []
     #read tinyproxy.conf        
-    with open(config.TP_CONF,'r+w') as tinyconf:
-        
+    with open(config.TP_CONF,'r+') as tinyconf: 
         lines = tinyconf.readlines()
         lines.reverse()
-
+    #with open(config.TP_CONF,'w') as tinyconf:
         # find "upstream server:port" and remove
         exp = """^\s*upstream .+?:\d+"""
         for l in lines:
@@ -91,7 +91,7 @@ def setproxy(proxy):
                 lines.remove(l)
                 break
         # find "Add header (authorization)" and remove
-        expheader = """^\s*AddHeader "Proxy-Authorization" "Basic .+" """     
+        expheader = '''^\s*AddHeader "Proxy-Authorization" "Basic .+"'''     
         for l in lines:
             m = re.search(expheader,l)
             if m:
@@ -99,12 +99,15 @@ def setproxy(proxy):
                 break
         
         lines.reverse()
+        if lines[-1][-1] != '\n':
+            lines.append('\n')
         lines.append(config.UPSTREAM.format(proxy.server, proxy.port))
         if proxy.authString:
             lines.append(config.ADD_HEADER.format(proxy.authString))
-
         #write back to conf
+        tinyconf.seek(0,0)
         tinyconf.writelines(lines)
+        tinyconf.truncate(tinyconf.tell())
 
         #update the active flag
         conn = sqlite.connect(config.CONN_PATH)
