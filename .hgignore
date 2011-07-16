@@ -1,6 +1,6 @@
 syntax: glob
 data/proxies
-tinyproxy.config
+dummy.config
 t.py
 .hgignore
 *.pyc

@@ -3,13 +3,15 @@
 import tsw.cliservice as cli    
 import sys
 import tsw.service as service
+import tsw.config as config
 
-helpInof = """
+helpInfo = """
     tswitch is the cli of tinyswitch. 
     Usage tswitch [Option]
     
     OPTION 
 
+        -v version
         -r reconfig tinyswitch
         -d delete a proxy entry from tinyswitch
         -a add a new proxy entry 
@@ -21,7 +23,10 @@ helpInof = """
 
 def usage():
     """print usage information"""
-    print helpInof
+    print helpInfo
+
+def version():
+    print config.VERSION
 
 
 operations = {
@@ -31,7 +36,8 @@ operations = {
     '-l'  : cli.all,
     '-s'  : cli.set,
     '-sn' : cli.setByName,
-    '-h'  : usage
+    '-h'  : usage,
+    '-v'  : version
     }
 
 if __name__ == '__main__':
