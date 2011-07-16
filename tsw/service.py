@@ -1,6 +1,6 @@
 from entity import *
 import sqlite3 as sqlite
-import os,re,config
+import os,re,config,subprocess
 
 def getConnection():
     conn = sqlite.connect(config.CONN_PATH)
@@ -48,7 +48,7 @@ def findUsingProxyInDB(conn):
     then do a database query to find out the match proxy entry"""
     serverInUse = findUsingProxyInConf()
     proxyDao = ProxyDao(conn)
-    proxy = proxyDao.getProxyByServerAndPort(serverInUse[0],serverInUse[1])
+    proxy = proxyDao.getProxyByServerAndPort(serverInUse[0],serverInUse[1]) if len(serverInUse)==2 else proxyDao.getNoProxy()
     return proxy
 
 def startup():
@@ -72,12 +72,12 @@ def startup():
     conn.commit()
     conn.close()
 
-def restartTP():
+def __restartTP():
     """
     restart tinyproxy. 
     """
-    os.popen(config.TP_BIN + ' restart')   
-
+    retval =  subprocess.call([config.TP_BIN,'restart'])
+    return retval
     
 def setproxy(proxy):
     """set the proxy as upstream of tinyproxy"""
@@ -105,9 +105,10 @@ def setproxy(proxy):
         lines.reverse()
         if lines[-1][-1] != '\n':
             lines.append('\n')
-        lines.append(config.UPSTREAM.format(proxy.server, proxy.port))
-        if proxy.authString:
-            lines.append(config.ADD_HEADER.format(proxy.authString))
+        if proxy.name != 'noproxy':
+            lines.append(config.UPSTREAM.format(proxy.server, proxy.port))
+            if proxy.authString:
+                lines.append(config.ADD_HEADER.format(proxy.authString))
         #write back to conf
         tinyconf.seek(0,0)
         tinyconf.writelines(lines)
@@ -120,7 +121,7 @@ def setproxy(proxy):
         dao.setActive(proxy.id)
         conn.commit()
         conn.close()
-
+        __restartTP()
             
 
 

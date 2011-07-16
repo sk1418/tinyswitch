@@ -28,7 +28,6 @@ class Proxy:
     def __repr__(self):
         return ' Id:%d, \n name:%s \n server:%s \n port:%s \n authString: %s\n desc:%s' %(self.id,self.name, self.server, self.port, self.authstring, self.description )
 
-
 class ProxyDao:
 
     '''
@@ -68,6 +67,10 @@ class ProxyDao:
             (p.id, p.name, p.server, p.port, p.username, p.password, p.authString, p.active, p.description ) = row
         cur.close()
         return p if p.id>0 else None
+
+    def getNoProxy(self):
+        ''' get NoProxy entry'''
+        return self.getProxyByName('noproxy')
 
     def getProxyByServerAndPort(self, server, port):
         
