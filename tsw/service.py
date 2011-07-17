@@ -54,14 +54,19 @@ def findUsingProxyInDB(conn):
 def startup():
     """
     startup processing:
-    1, set the config parameters (TP_BIN)
-    2, get the proxy in conf file, set the corresponding proxy in db as active
+    1, check if /etc/tinyproxy.conf exists. if not there, return false
+    2, set the config parameters (TP_BIN)
+    3, get the proxy in conf file, set the corresponding proxy in db as active
+    return true if everything is ok, otherwise return false
     """
+    if not os.path.isfile(config.TP_CONF):
+        return 0
     # set system parameters(TP_BIN) in config
     conn = getConnection()
     proxyDao = ProxyDao(conn)
     bin = proxyDao.getTinyProxyPath()
     config.TP_BIN = bin 
+
 
     # get the using proxy in conf file and set active in db
     proxyDao.deactiveAll()

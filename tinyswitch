@@ -35,7 +35,11 @@ operations = {
     }
 
 if __name__ == '__main__':
-    service.startup()
+    ok = service.startup()
+    if not ok:
+        print "Error: /etc/tinyproxy.conf not found. Has tinyproxy been installed? "
+        exit(1)
+
     if sys.argv.__len__() <2 or not sys.argv[1]:
         usage()
         sys.exit(1)
