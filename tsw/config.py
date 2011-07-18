@@ -2,6 +2,7 @@ from os import path
 
 APP_PATH       = path.join(path.dirname(__file__),"../")
 CONN_PATH      = path.join(APP_PATH,"data/proxies")                 #sqlite3 data file path
+BACKUP_PATH    = path.join(APP_PATH,"backup/tinyproxy.conf.last")
 VERSION        = '1.0.0'                                            #software version
 VERSION_URL    = 'http://to be defined'                             #version url, used to check if there is new version
 LATEST_VERSION = None

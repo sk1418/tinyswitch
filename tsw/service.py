@@ -1,6 +1,6 @@
 from entity import *
 import sqlite3 as sqlite
-import os,re,config,subprocess
+import os,re,config,subprocess,shutil
 
 def getConnection():
     conn = sqlite.connect(config.CONN_PATH)
@@ -76,6 +76,7 @@ def startup():
         proxyDao.setActive(proxy.id)
     conn.commit()
     conn.close()
+    return 1
 
 def __restartTP():
     """
@@ -84,6 +85,11 @@ def __restartTP():
     retval =  subprocess.call([config.TP_BIN,'restart'])
     return retval
     
+def __backupConf():
+    """cp the tinyproxy.conf to backup directory before setproxy"""
+    shutil.copy2(config.TP_CONF,config.BACKUP_PATH)
+    print "A backup of the original tinyproxy.conf was stored at " + config.BACKUP_PATH
+
 def setproxy(proxy):
     """set the proxy as upstream of tinyproxy"""
     lines = []
@@ -114,6 +120,8 @@ def setproxy(proxy):
             lines.append(config.UPSTREAM.format(proxy.server, proxy.port))
             if proxy.authString:
                 lines.append(config.ADD_HEADER.format(proxy.authString))
+        #before write back to file, do backup
+        __backupConf()
         #write back to conf
         tinyconf.seek(0,0)
         tinyconf.writelines(lines)
