@@ -1,7 +1,7 @@
 from entity import *
 import service,os
-from service import findtinyproxy
-import config
+from service import findtinyproxyConf
+import config, confighandler
 import getpass
 
 def __names(dao):
@@ -121,7 +121,6 @@ def setByName(name):
     if not service.checkPermission():
         print "Error: set proxy failed. Permission denied!"
         exit(1)
-    init() #check if init() is needed
     conn  = service.getConnection() 
     dao   = ProxyDao(conn)
     p = dao.getProxyByName(name)
@@ -136,7 +135,6 @@ def setByName(name):
 def set():
     """set proxy as current proxy (interactively)"""
     
-    init() #check if init() is needed
     conn = service.getConnection()
     dao  = ProxyDao(conn)
     __names(dao) # print available proxy names
@@ -158,39 +156,45 @@ def set():
     print p
     print "---- Proxy set ----"
 
-def init():
-    """check tinyproxy start script path, if not there set the path interactively"""
-    conn = service.getConnection()
-    dao  = ProxyDao(conn)
-    if not dao.getTinyProxyPath().strip(): # no value in DB for tinyproxy.bin.path
-        print "\n---- tinyproxy mgmt script location has not been set. Enter initialization wizard ----\n"
-        reconfig() 
-        print "\n---- tinyswitch initialized ----\n"
-    conn.close()
-
 def reconfig():
-    """reset tinyproxy.bin.path"""
-    found = findtinyproxy()
-    conn  = service.getConnection() 
-    dao   = ProxyDao(conn)
-    path  = ""
-    print "\n---- set tinyproxy start script ----\n"
-    if found:
-        yn = raw_input("> TinySwtich found tinyproxy script (%s) Is that correct? [yes|no]: "%(found,))
-        if yn.lower() == "yes":
-            path = found
+    """reset values in config file"""
+    cmd  = ""
+    print "\n---- set command line to restart tinyproxy  ----\n"
     while 1:
-        
-        path = raw_input( """> Please enter the tinyproxy mgmt script location:
-Note:/usr/sbin/tinyproxy is NOT the script! \n """) if not path else path
-        if path and os.path.isfile(path):
+    
+        cmd = raw_input( """> Please enter the command line to restart tinyproxy [without sudo]:
+> For example : 
+    systemctl restart tinyproxy.service 
+> or
+    /etc/init.d/tinyproxy restart
+> or
+    /etc/rc.d/tinyproxy restart \n """) 
+        if cmd and cmd.find("restart")>=0 and cmd.find('tinyproxy')>=0:
             break
         else:
-            print "Error: script path is not valid"
-            path=""
-    #till here, path should be set successfully
-    dao.saveTinyProxyPath(path)    
-    conn.commit()
-    print "\n---- tinyproxy mgmt script location [%s] was set ----\n" % (path,)
-    conn.close()
+            print "Error: tinyproxy restart command is not correct."
+
+    cmd = cmd.lower().replace('sudo','')
+    #till here, cmd should be set successfully
+    confighandler.updateconfig("settings","tinyproxy.restart",cmd)
+
+    #tinyproxy conf part (tinyproxy.conf)
+    found = findtinyproxyConf()
+    cfg = ''
+    if found:
+        yn = raw_input("> TinySwitch has found tinyproxy.conf at (%s) Is that correct? [yes|no]" % found)
+        if yn.lower() == 'yes':
+            cfg = found
+    while 1:
+        cfg = raw_input("""> Please enter the tinyproxy config file location:
+        > (usually it has name tinyproxy.conf)\n """) if not cfg else cfg
+
+        if cfg and os.path.isfile(cfg):
+            break
+        else:
+            print "Error: given tinyproxy config file is not valid."
+    confighandler.updateconfig("settings","tinyproxy.config",cfg)
+
+
+
 

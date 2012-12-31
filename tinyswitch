@@ -4,6 +4,7 @@ import tsw.cliservice as cli
 import sys
 import tsw.service as service
 import tsw.config as config
+import tsw.confighandler as confighandler
 
 helpInfo = """
     tinyswitch is the cli of tinyswitch. 
@@ -41,11 +42,22 @@ operations = {
     }
 
 if __name__ == '__main__':
-    ok = service.startup()
-    if not ok:
-        print "Error: /etc/tinyproxy.conf not found. Has tinyproxy been installed? "
-        exit(1)
+    #check if config file init is required
+    if confighandler.requireInit():
+        confighandler.initHomeConfPath() 
+        #go to reconfig
+        cli.reconfig()
 
+    #load config
+    if not confighandler.loadConfig():
+        print 'Error: config file cannot be found, run "tinyswitch -r" to fix it'
+        exit(1)
+    
+    resyncOK = service.resync_proxy()
+    if not resyncOK:
+        print "Error: your tinyproxy config file has error, please fix that first."
+        exit(1)
+    
     if sys.argv.__len__() <2 or not sys.argv[1]:
         usage()
         sys.exit(1)
@@ -58,6 +70,4 @@ if __name__ == '__main__':
             f = operations.get(sys.argv[1])
             f() if f else usage()
             sys.exit(0)
-
-
 

@@ -144,19 +144,3 @@ class ProxyDao:
         cur = self.conn.cursor()
         cur.execute(sql,(id,))
         cur.close()
-
-
-    def getTinyProxyPath(self):
-        sql = """select value from Config where name='tinyproxy.bin.path'"""
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        path = cur.fetchone()[0]
-        cur.close()
-        return path
-
-    def saveTinyProxyPath(self,v):
-        sql = """UPDATE config SET value=? where name='tinyproxy.bin.path'"""
-        cur = self.conn.cursor()
-        cur.execute(sql,(v,))
-        cur.close()
-

@@ -1,6 +1,7 @@
 from entity import *
 import sqlite3 as sqlite
 import os,re,config,subprocess,shutil
+import confighandler
 
 def getConnection():
     conn = sqlite.connect(config.CONN_PATH)
@@ -8,21 +9,19 @@ def getConnection():
 
 def checkPermission():
     """check if the user has permission to update tinyproxy conf file and manage tinyproxy"""
-    return os.access(config.TP_BIN,os.X_OK) and os.access(config.TP_CONF,os.W_OK)
+    return  True
 
 
-def findtinyproxy():
+def findtinyproxyConf():
     """
-    search the tinyproxy starting script. if found one (either in /etc/init.d/ or /etc/rc.d/) 
-    return the path, otherwise return None. This should be done when application starts the 
-    first time.(or the config in DB is empty)
+    search the tinyproxy conf file. If one was found (defined in config.TP_CONF_LOOKUP)
+    return the path, otherwise return None. 
+    this is needed for reconfig tinyswitcher
     """
-    if os.path.isfile(config.TP_LOOKUP1) :
-        return config.TP_LOOKUP1
-    elif os.path.isfile(config.TP_LOOKUP2):
-        return config.TP_LOOKUP2
-    else:
-        return None
+    for f in config.TP_CONF_LOOKUP:
+        if os.path.isfile(f) :
+            return f
+    return None
 
 def findUsingProxyInConf():
     """
@@ -51,24 +50,13 @@ def findUsingProxyInDB(conn):
     proxy = proxyDao.getProxyByServerAndPort(serverInUse[0],serverInUse[1]) if len(serverInUse)==2 else proxyDao.getNoProxy()
     return proxy
 
-def startup():
+def resync_proxy():
     """
-    startup processing:
-    1, check if /etc/tinyproxy.conf exists. if not there, return false
-    2, set the config parameters (TP_BIN)
-    3, get the proxy in conf file, set the corresponding proxy in db as active
+     get the proxy in conf file, set the corresponding proxy in db as active
     return true if everything is ok, otherwise return false
     """
-    if not os.path.isfile(config.TP_CONF):
-        return 0
-    # set system parameters(TP_BIN) in config
     conn = getConnection()
     proxyDao = ProxyDao(conn)
-    bin = proxyDao.getTinyProxyPath()
-    config.TP_BIN = bin 
-
-
-    # get the using proxy in conf file and set active in db
     proxyDao.deactiveAll()
     serverInUse = findUsingProxyInConf()
     proxy = findUsingProxyInDB(conn)
@@ -78,11 +66,16 @@ def startup():
     conn.close()
     return 1
 
-def __restartTP():
+def __refresh_tinyproxy():
     """
+    update the tinyproxy.conf and 
     restart tinyproxy. 
     """
-    retval =  subprocess.call([config.TP_BIN,'restart'])
+    
+    print "updating tinyproxy config and restarting tinyproxy..."
+    cmd= "sudo cp -f "  + config.TEMP_PATH + " " + config.TP_CONF+" && sudo " + config.TP_BIN
+    retval =  subprocess.call(cmd, shell=True)
+    print "done"
     return retval
     
 def __backupConf():
@@ -91,14 +84,26 @@ def __backupConf():
     print "A backup of the original tinyproxy.conf was stored at " + config.BACKUP_PATH
 
 def setproxy(proxy):
-    """set the proxy as upstream of tinyproxy"""
+    """set the proxy as upstream of tinyproxy
+        since updating tinyproxy.conf and restarting tinyproxy service need
+        root privilege, the setproxy will work in following steps:
+        1- cp tinyproxy.conf to ~/.tinyswitch/.tmp
+        2- backup tinyproxy.conf to backup dir
+        3- read and update the tmp file
+        4- sudo cp tmp -> real conf, and sudo restart tinyproxy
+        5- update database
+    """
+    
+    # cp tinyproxy.conf to .tmp
+    shutil.copy(config.TP_CONF, config.TEMP_PATH)
+
+
+
     lines = []
-    #read tinyproxy.conf        
-    with open(config.TP_CONF,'r+') as tinyconf: 
+    #read tmp
+    with open(config.TEMP_PATH,'r+') as tinyconf: 
         lines = tinyconf.readlines()
         lines.reverse()
-    #with open(config.TP_CONF,'w') as tinyconf:
-        # find "upstream server:port" and remove
         exp = """^\s*upstream .+?:\d+"""
         for l in lines:
             m = re.search(exp,l)
@@ -122,11 +127,14 @@ def setproxy(proxy):
                 lines.append(config.ADD_HEADER.format(proxy.authString))
         #before write back to file, do backup
         __backupConf()
-        #write back to conf
+
+        #write back to conf(tmp file)
         tinyconf.seek(0,0)
         tinyconf.writelines(lines)
         tinyconf.truncate(tinyconf.tell())
 
+    #cp tmp to real tinyproxy.conf
+    if not __refresh_tinyproxy() >0 :
         #update the active flag
         conn = sqlite.connect(config.CONN_PATH)
         dao = ProxyDao(conn)
@@ -134,8 +142,7 @@ def setproxy(proxy):
         dao.setActive(proxy.id)
         conn.commit()
         conn.close()
-        __restartTP()
-            
+                
 
 
 
