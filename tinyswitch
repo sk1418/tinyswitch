@@ -10,6 +10,7 @@ helpInfo = """
     tinyswitch is the cli of tinyswitch. 
     Usage tswitch [Option]
     
+
     OPTION 
 
         -v version
