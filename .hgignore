@@ -1,8 +1,0 @@
-syntax: glob
-data/proxies
-dummy.config
-t.py
-.hgignore
-*.pyc
-*.swp
-*.orig
