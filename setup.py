@@ -1,11 +1,12 @@
-from distutils.core import setup
-
+from setuptools import setup, find_packages
+import glob
 setup(
     name = 'tinyswitch',
     version = '1.1.0',
-    packages = ['tsw'],
-    package_dir = {'tsw': 'tsw'},
-    data_files = [('/etc/tinyswitch/samples', ['sample/data/proxies','sample/tsw.conf'])],
+    packages = find_packages(),
+    data_files=[('sample',glob.glob('sample/*.*')),('sample/data',['sample/data/proxies'])],
+    include_package_data= True,
+    zip_safe=False,
     scripts=['tinyswitch'],
     author='Kai Yuan',
     author_email='kent.yuan@gmail.com',
