@@ -7,10 +7,9 @@ import tsw.config as config
 import tsw.confighandler as confighandler
 
 helpInfo = """
-    tinyswitch is the cli of tinyswitch. 
+    tinyswitch is tinyproxy based proxy switcher
     Usage tswitch [Option]
     
-
     OPTION 
 
         -v version
@@ -18,7 +17,8 @@ helpInfo = """
         -d delete a proxy entry from tinyswitch
         -a add a new proxy entry 
         -l list all proxy entries managed by tinyswitch
-        -s [name] set/(switch to) another proxy as system proxy server (root permission needed). if [name] is given, tinyproxy will set the [name] proxy as system proxy, otherwise proxy will be set interactively.
+        -s [name] set/(switch to) another proxy as system proxy server (root permission needed). 
+           If [name] is given, tinyproxy will set the [name] proxy as system proxy, otherwise proxy will be set interactively.
         -h print help message
             """
 
