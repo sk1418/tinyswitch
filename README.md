@@ -25,3 +25,19 @@ Currently tinyswitch has only a CLI.
  4. start application by typing `tinyswitch`, then follow the configuration wizard.
  5. `tinyswith -h` will print help information
 
+#Usage
+
+	 tinyswitch is tinyproxy based proxy switcher
+		Usage tinyswitch [Option]
+		
+		OPTION 
+
+			-v version
+			-r reconfig tinyswitch
+			-d delete a proxy entry from tinyswitch
+			-a add a new proxy entry 
+			-l list all proxy entries managed by tinyswitch
+			-s [name] set/(switch to) another proxy as system proxy server (root permission needed). 
+			   If [name] is given, tinyproxy will set the [name] proxy as system proxy, otherwise proxy will be set interactively.
+			-h print help message
+

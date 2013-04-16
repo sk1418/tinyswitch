@@ -8,7 +8,7 @@ import tsw.confighandler as confighandler
 
 helpInfo = """
     tinyswitch is tinyproxy based proxy switcher
-    Usage tswitch [Option]
+    Usage tinyswitch [Option]
     
     OPTION 
 
