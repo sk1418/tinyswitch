@@ -6,6 +6,8 @@
     - [Archlinux user](#archlinux-user)
     - [For other users](#for-other-users)
 - [Usage](#usage)
+
+
 #Introduction
 
 Sometimes we have to work under various network environments. At different clients, in office, at home... Switching proxy settings again and again is really annoying.
