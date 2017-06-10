@@ -8,7 +8,7 @@
 - [Usage](#usage)
 
 
-#Introduction
+# Introduction
 
 Sometimes we have to work under various network environments. At different clients, in office, at home... Switching proxy settings again and again is really annoying.
 
@@ -18,13 +18,13 @@ Tinyproxy will work as a transparent proxy forwarding service. So tinyproxy is r
 
 Currently tinyswitch has only a CLI. 
 
-#Requirements
+# Requirements
 
     python 2.6+
     tinyproxy 
 
 
-#Installation
+# Installation
 
 ## Archlinux user
 
