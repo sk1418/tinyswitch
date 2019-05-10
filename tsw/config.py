@@ -14,5 +14,5 @@ LATEST_VERSION = None
 TP_BIN         = ''                                                 #tinyproxy starting script path, will be assigned by the confighandler
 TP_CONF        = None #tinyproxy configuration file path, will be set by confighandler
 TP_CONF_LOOKUP = ['/etc/tinyproxy/tinyproxy.conf','/etc/tinyproxy.conf']
-UPSTREAM       = 'upstream {0}:{1}\n'                               # proxy forwarding
+UPSTREAM       = 'upstream http {0}:{1}\n'                               # proxy forwarding
 ADD_HEADER     = 'AddHeader "Proxy-Authorization" "Basic {0}"\n'    # add header template. the placeholder {0} will be filled by authString
